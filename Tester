@@ -6,31 +6,32 @@ public class Tester {
 	final static int MANKALA_B = 13;
 	public static void main(String[] args) {
 		int []pits = new int[14];
+		for(int i = 0; i < 14; i++) 
+		{	pits[i] = 3;	}
+		printBoard(pits);
+		game(pits);
+		
 		
 	}
 	
-	public void game(int[] pits) {
+	public static void doSomthing(int[] list) {
+		list[2] = 0;
+	}
+	
+	public static void game(int[] pits) {
 		Scanner scan = new Scanner(System.in);
 		int player = 0; // 0 if it's player A's turn, 1 if it's player B's turn
 		Boolean gameOver = false; // true when the whole game is over
 		int undo = 3; // keeps track of # of chance left for the player to undo
-		int choice = -1;
-		int cur = -1;
 		
 		// loop until the game is over
 		while(!gameOver) {
 			if(player == 0) { 
-				System.out.println("Player A's turn, pick the pit you want to begin with(1-6):");
-				choice = scan.nextInt();
-				cur = choice;
-				
+				move(pits, 0);
+				player = 1;
 			} else {
-				System.out.println("Player B's turn, pick the pit you want to begin with(1-6):");
-				choice = scan.nextInt();
-				cur = choice + 6;
-				while() {
-					
-				}
+				move(pits, 1);
+				player = 0;
 			}
 			
 			if((pits[13] + pits[6]) == 48) // this part needs to be modified according to the # of pebbles the player wants to start with
@@ -38,28 +39,54 @@ public class Tester {
 		}
 	}
 	
-	public void distribute(int[] pits, int start, int player) {
-		Boolean roundDone = false; // true when one player's round is finished
-		pits[start] = 0; // clear the current pit's pebbles
-		int cur = start + 1;
-		int pebbles = pits[start];
-		while(!roundDone) {
-			while(pebbles != 0) {
-				pits[cur]++; // add 1 to the pit
-				pebbles -= 1; // remaining pebbles - 1
-				if(cur+1 == MANKALA_B && player == 0) // if it's player A's turn and it reaches the mancala B, reset cur
-					cur = 0;
-				else if (cur+1 == MANKALA_A && player == 1) // if it's player A's turn and it reaches the mancala A, skip it
-					cur+=2;
-				else
-					cur++;
-				
-				if(cur == 14)
-					cur = 0;
-			}
-			if(pits[cur] == 0) // if the last pebble lands in an empty pit other than the two mancala, round done
-				roundDone = true;
+	/**
+	 * This is a function that will complete a player's turn
+	 * 
+	 * @param pits int array that keeps track of the # of pebbles in each pit
+	 * @param player 0 for player A, 1 for player B
+	 * @param total the total number of pebbles on the board
+	 */
+	public static void move(int[] pits, int player) {
+		Scanner scan = new Scanner(System.in);
+		int cur; // int that indicates the current pit
+		
+		// get user input of the pit to start with and set the current pit
+		System.out.println("Player " + (char)(player+65) + "'s turn, pick the pit you want to begin with(1-6):");
+		int start = scan.nextInt();
+		if(player == 0) 
+			cur = start - 1; // get the actual index of the array corresponding to the user's choice
+		else 
+			cur = start + 6;
+		
+		int pebbles = pits[cur]; // get the number of pebbles in the pit which the player wants to start with
+		pits[cur] = 0; // clear the current pit's pebbles
+		
+		// loop until all the pebbles in that pit has been distributed
+		while(pebbles != 0) {
+			cur++;
+			if(cur == MANKALA_B && player == 0)
+				cur++;
+			else if (cur == MANKALA_A && player == 1)
+				cur = 0;
+			else if (cur > 13)
+				cur = 0;
+			pits[cur]++;
+			pebbles -= 1; // remaining pebbles - 1
 		}
+		printBoard(pits);
+	}
+	
+	// this function prints the array
+	public static void printBoard(int []arr) {
+		System.out.println("B             A");
+		System.out.print(arr[MANKALA_B] + " ");
+		for(int i = 12; i > 6; i--)
+		{	System.out.print(arr[i] + " ");	}
+		System.out.println(arr[MANKALA_A]);
+		System.out.print("  ");
+		for(int i = 0; i < 6; i++)
+		{	System.out.print(arr[i] + " ");	}
+		System.out.println();
 	}
 
 }
