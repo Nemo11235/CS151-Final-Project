@@ -22,7 +22,6 @@ public class Tester {
 		Scanner scan = new Scanner(System.in);
 		int player = 0; // 0 if it's player A's turn, 1 if it's player B's turn
 		Boolean gameOver = false; // true when the whole game is over
-		int undo = 3; // keeps track of # of chance left for the player to undo
 		
 		// loop until the game is over
 		while(!gameOver) {
@@ -33,7 +32,6 @@ public class Tester {
 				move(pits, 1);
 				player = 0;
 			}
-			
 			if((pits[13] + pits[6]) == 48) // this part needs to be modified according to the # of pebbles the player wants to start with
 				gameOver = true;
 		}
@@ -49,31 +47,52 @@ public class Tester {
 	public static void move(int[] pits, int player) {
 		Scanner scan = new Scanner(System.in);
 		int cur; // int that indicates the current pit
+		int undo = 3; // num of times left for the currrent player to undo
 		
-		// get user input of the pit to start with and set the current pit
-		System.out.println("Player " + (char)(player+65) + "'s turn, pick the pit you want to begin with(1-6):");
-		int start = scan.nextInt();
-		if(player == 0) 
-			cur = start - 1; // get the actual index of the array corresponding to the user's choice
-		else 
-			cur = start + 6;
-		
-		int pebbles = pits[cur]; // get the number of pebbles in the pit which the player wants to start with
-		pits[cur] = 0; // clear the current pit's pebbles
-		
-		// loop until all the pebbles in that pit has been distributed
-		while(pebbles != 0) {
-			cur++;
-			if(cur == MANKALA_B && player == 0)
+		int []copy = pits.clone();
+		Boolean confirm = false;
+		while(!confirm) {
+			// get user input of the pit to start with and set the current pit
+			System.out.println("Player " + (char)(player+65) + "'s turn, pick the pit you want to begin with(1-6):");
+			int start = scan.nextInt();
+			if(player == 0) 
+				cur = start - 1; // get the actual index of the array corresponding to the user's choice
+			else 
+				cur = start + 6;
+			
+			int pebbles = pits[cur]; // get the number of pebbles in the pit which the player wants to start with
+			pits[cur] = 0; // clear the current pit's pebbles
+			
+			// loop until all the pebbles in that pit has been distributed
+			while(pebbles != 0) {
 				cur++;
-			else if (cur == MANKALA_A && player == 1)
-				cur = 0;
-			else if (cur > 13)
-				cur = 0;
-			pits[cur]++;
-			pebbles -= 1; // remaining pebbles - 1
+				if(cur == MANKALA_B && player == 0)
+					cur++;
+				else if (cur == MANKALA_A && player == 1)
+					cur = 0;
+				else if (cur > 13)
+					cur = 0;
+				pits[cur]++;
+				pebbles -= 1; // remaining pebbles - 1
+			}
+			printBoard(pits);
+			
+			// ask if the player wants to undo this move
+			System.out.println("Do you want to finalize your move?\n1. Yes I confirm\n2. No I want to undo");
+			int choice = scan.nextInt();
+			if(choice == 1) {
+				confirm = true;
+			} else if(choice != 1 && undo != 0){
+				confirm = false;
+				pits = copy.clone();
+				System.out.println("Undo remaining: " + (--undo));
+				printBoard(pits);
+			} else if (choice != 1 && undo == 0) {
+				System.out.println("You have used up all your undo chances, it's now the other players turn.");
+				confirm = true;
+			}
 		}
-		printBoard(pits);
+		printBoard(pits); // prints the board after the player finalize his move
 	}
 	
 	// this function prints the array
