@@ -83,7 +83,7 @@ public class Menu {
 			//Add the button the the prompt frame
 		stoneNum.add(threeStones, BorderLayout.WEST);
 				
-		//User selects 3 stones
+		//User selects 4 stones
 		JButton fourStones = new JButton("4");
 		threeStones.addActionListener(event -> {
 			stones = 4;
