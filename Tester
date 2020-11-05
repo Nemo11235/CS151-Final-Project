@@ -2,14 +2,14 @@ import java.util.*;
 
 public class Tester {
 
-	final static int MANKALA_A = 6;
-	final static int MANKALA_B = 13;
+	final static int MANCALA_A = 6;
+	final static int MANCALA_B = 13;
 	public static void main(String[] args) {
 		int []pits = new int[14];
 		for(int i = 0; i < 14; i++) 
-		{	pits[i] = 3;	}
-		pits[MANKALA_A] = 0;
-		pits[MANKALA_B] = 0;
+		{	pits[i] = 4;	}
+		pits[MANCALA_A] = 0;
+		pits[MANCALA_B] = 0;
 		game(pits);
 		
 		
@@ -71,25 +71,41 @@ public class Tester {
 				// loop until all the pebbles in that pit has been distributed
 				while(pebbles != 0) {
 					cur++;
-					if(cur == MANKALA_B && player == 0)
-						cur++;
-					else if (cur == MANKALA_A && player == 1)
+					if(cur == MANCALA_B && player == 0)
 						cur = 0;
+					else if (cur == MANCALA_A && player == 1)
+						cur++;
 					else if (cur > 13)
 						cur = 0;
 					pits[cur]++;
 					pebbles -= 1; // remaining pebbles - 1
 				}
 				
+				// if the last pebble lands in an empty spot of the player's side, he gets to collect this pebble and the opposite pit's pebble to his mancala
+				if(pits[cur] == 1 && cur < 6 && player == 0 && pits[12 - cur] != 0) {
+					pits[MANCALA_A] += (1 + pits[12 - cur]);
+					pits[cur] = 0;
+					pits[12 - cur] = 0;
+				} else if (pits[cur] == 1 && cur < 13 && cur > 6 && player == 1 && pits[12 - cur] != 0) {
+					pits[MANCALA_B] += (1 + pits[12 - cur]);
+					pits[cur] = 0;
+					pits[12 - cur] = 0;
+				}
+				
 				// check if the game is over after every move
-				if (gameOver(pits) && pits[MANKALA_A] > pits[MANKALA_B]) {
+				if (gameOver(pits) && (pits[MANCALA_A] > pits[MANCALA_B])) {
 					System.out.println("Game over, player A wins!");
-				} else if (gameOver(pits) && pits[MANKALA_A] > pits[MANKALA_B]) {
+					return;
+				} else if (gameOver(pits) && (pits[MANCALA_A] < pits[MANCALA_B])) {
 					System.out.println("Game over, player B wins!");
+					return;
+				} else if (gameOver(pits)){
+					System.out.println("Game over, draw!");
+					return;
 				}
 				
 				// if it lands in the current player's mancala and the game is not over yet, then that player gets another chance
-				scored = ((cur == MANKALA_A && player == 0) || (cur == MANKALA_B && player == 1));
+				scored = ((cur == MANCALA_A && player == 0) || (cur == MANCALA_B && player == 1));
 				if (scored)
 					System.out.println("Scored, another chance granted.");
 			}
@@ -111,7 +127,6 @@ public class Tester {
 				confirm = true;
 			}
 		}
-		printBoard(pits); // prints the board after the player finalize his move
 	}
 
 
@@ -123,14 +138,15 @@ public class Tester {
 	// this function prints the array
 	public static void printBoard(int []arr) {
 		System.out.println("B             A");
-		System.out.print(arr[MANKALA_B] + " ");
+		System.out.print(arr[MANCALA_B] + " ");
 		for(int i = 12; i > 6; i--)
 		{	System.out.print(arr[i] + " ");	}
-		System.out.println(arr[MANKALA_A]);
+		System.out.println(arr[MANCALA_A]);
 		System.out.print("  ");
 		for(int i = 0; i < 6; i++)
 		{	System.out.print(arr[i] + " ");	}
 		System.out.println();
 	}
 
+	
 }
