@@ -65,9 +65,6 @@ public class View implements ChangeListener {
 		stoneNum.setVisible(true);
 	}
 	
-	/**
-	 * Selected style.
-	 */
 	private void selectBoardStyle(final int size) {
 		pitIndex = model.getcurBoard();
 		for (int i = 0; i < 14; i++) {
